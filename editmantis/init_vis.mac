@@ -1,0 +1,12 @@
+
+/control/verbose 0
+/control/saveHistory
+/run/verbose 0
+# set PC radius here
+
+#
+# Initialize kernel
+/run/initialize
+#
+# Visualization setting
+/control/execute vis.mac
