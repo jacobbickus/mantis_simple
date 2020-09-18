@@ -40,4 +40,4 @@
 #/output/myoutput DetIncidentData
 #/output/myoutput DetData
 #/output/myoutput IntObjData
-/run/beamOn 10
+/run/beamOn 100
