@@ -58,7 +58,7 @@ void RunAction::EndOfRunAction(const G4Run* aRun)
         G4cout << G4endl << "Run Summary" << G4endl;
         G4cout <<   "---------------------------------" << G4endl;
         G4cout << "Total Number of Events: " << TotNbofEvents << G4endl;
-        G4cout << "Total number of Surface Events: " << fTotalSurface << G4endl;
+        //G4cout << "Total number of Surface Events: " << fTotalSurface << G4endl;
         G4cout << "Total number of NRF Photons: " << fNRF << G4endl;
         G4cout << "Total number of Tracks Cut Based on Position: " << fStatusKilled << G4endl;
         G4cout <<
@@ -93,7 +93,7 @@ void RunAction::EndOfRunAction(const G4Run* aRun)
         std::cout << std::endl << "Run Summary" << std::endl;
         std::cout <<   "---------------------------------" << std::endl;
         std::cout << "Total Number of Events: " << TotNbofEvents << std::endl;
-        std::cout << "Total number of Surface Events: " << fTotalSurface << std::endl;
+        //std::cout << "Total number of Surface Events: " << fTotalSurface << std::endl;
         std::cout << "Total number of NRF Photons: " << fNRF << std::endl;
         std::cout << "Total number of Tracks Cut Based on Position: " << fStatusKilled << std::endl;
         std::cout <<

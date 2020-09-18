@@ -13,9 +13,6 @@ void HistoManager::Book()
   manager->SetVerboseLevel(0);
   manager->SetNtupleMerging(true);
 
-  // Create Directories
-  //manager->SetNtupleDirectoryName("CherenkovData");
-
   // open output file
   G4bool fileOpen = manager->OpenFile(gOutName);
 
@@ -41,10 +38,7 @@ void HistoManager::Book()
     manager->CreateNtuple("IncidentDet","IncidentDet");
 
     manager->CreateNtupleDColumn("Energy");
-    manager->CreateNtupleIColumn("isNRF");
-    manager->CreateNtupleDColumn("x");
-    manager->CreateNtupleDColumn("y");
-    manager->CreateNtupleDColumn("z");
+    manager->CreateNtupleIColumn("PMTNumber");
     manager->FinishNtuple();
 
     // Create Ntuple for Reactions within detector
@@ -52,16 +46,12 @@ void HistoManager::Book()
     manager->CreateNtuple("DetProcess","DetProcess");
 
     manager->CreateNtupleSColumn("Process");
-    manager->CreateNtupleDColumn("E_beam");
     manager->FinishNtuple();
 
     // Create Nutple for Energy if detected
     manager->CreateNtuple("Detected","Detected");
     manager->CreateNtupleDColumn("Energy");
-    manager->CreateNtupleIColumn("isNRF");
-    manager->CreateNtupleDColumn("x");
-    manager->CreateNtupleDColumn("y");
-    manager->CreateNtupleDColumn("z");
+    manager->CreateNtupleIColumn("PMTNumber");
     manager->FinishNtuple();
 
     // Create Ntuple for Number of Photons Emitted in Water
@@ -73,10 +63,9 @@ void HistoManager::Book()
     // Create Ntuple for Interogation Object
     manager->CreateNtuple("IntObj","IntObj");
     manager->CreateNtupleDColumn("E_incident");
-    manager->CreateNtupleIColumn("isNRF");
     manager->FinishNtuple();
 
-    // Create Ntuple for incident water data 
+    // Create Ntuple for incident water data
     manager->CreateNtuple("IncidentWater","IncidentWater");
     manager->CreateNtupleDColumn("E_incident");
     manager->CreateNtupleIColumn("isNRF");

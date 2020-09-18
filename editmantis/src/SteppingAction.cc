@@ -3,12 +3,11 @@
 
 
 SteppingAction::SteppingAction(const DetectorConstruction* det, G4ParticleGun* particle_gun, RunAction* localrun)
-: G4UserSteppingAction(), drawIntObjDataFlag(0), drawWaterFlag(0), drawIncFlag(0), drawDetFlag(0), stepM(NULL)
+: G4UserSteppingAction(), drawIntObjDataFlag(0), drawWaterFlag(0), stepM(NULL)
 {
     stepM = new StepMessenger(this);
     local_det = det;
     particle_gun_local = particle_gun;
-    fExpectedNextStatus = Undefined;
     run = localrun;
 }
 
@@ -153,136 +152,6 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
         } // end of optical photons if statement
 
     } // end of if loop while inside water
-
-    // PMT Analysis
-
-    G4StepPoint* endPoint   = aStep->GetPostStepPoint();
-    G4StepPoint* startPoint = aStep->GetPreStepPoint();
-
-    if(endPoint->GetStepStatus() == fGeomBoundary){
-
-        const G4DynamicParticle* theParticle = theTrack->GetDynamicParticle();
-
-        G4ThreeVector oldMomentumDir = theParticle->GetMomentumDirection();
-
-        G4ThreeVector m0 = startPoint->GetMomentumDirection(); // don't use these yet?
-        G4ThreeVector m1 = endPoint->GetMomentumDirection();
-
-        G4OpBoundaryProcessStatus theStatus = Undefined;
-        G4ProcessManager* OpManager =
-          G4OpticalPhoton::OpticalPhoton()->GetProcessManager();
-        G4int MAXofPostStepLoops =
-          OpManager->GetPostStepProcessVector()->entries();
-        G4ProcessVector* postStepDoItVector =
-          OpManager->GetPostStepProcessVector(typeDoIt);
-
-        if(endPoint->GetPhysicalVolume()->GetName().compare(0,2,"PC")==0 && startPoint->GetPhysicalVolume()->GetName().compare(0,2,"PC")!=0){ // first time in photocathode
-            run->AddTotalSurface();
-            if(drawIncFlag)
-            {
-              manager->FillNtupleDColumn(1,0,theParticle->GetKineticEnergy()/(MeV));
-              manager->FillNtupleIColumn(1,1,isNRF);
-              Xdet = endPoint->GetPosition();
-              manager->FillNtupleDColumn(1,2,Xdet.x()/(cm));
-              manager->FillNtupleDColumn(1,3,Xdet.y()/(cm));
-              manager->FillNtupleDColumn(1,4,Xdet.z()/(cm));
-              manager->AddNtupleRow(1);
-            }
-
-
-            for (G4int i=0; i<MAXofPostStepLoops; ++i) {
-                G4VProcess* currentProcess = (*postStepDoItVector)[i];
-                //std::cout << G4Cerenkov::PostStepGetPhysicalInteractionLength(theTrack) << std::endl;
-
-                G4OpBoundaryProcess* opProc = dynamic_cast<G4OpBoundaryProcess*>(currentProcess);
-
-                if(opProc){
-                    theStatus = opProc->GetStatus();
-                    E_beam = particle_gun_local->GetParticleEnergy();
-
-                    if(theStatus == Transmission){
-                        //run->AddTransmission();
-                        procCount = "Trans";
-                        // G4cout << "transmission"<< G4endl;
-                    }
-                    else if(theStatus == FresnelRefraction){
-                        //run->AddFresnelRefraction();
-                        procCount = "Refr";
-                        //G4cout << "fres refraction"<< G4endl;
-                    }
-                    else if (theStatus == TotalInternalReflection) {
-                      //run->AddTotalInternalReflection();
-                        procCount = "Int_Refl";
-                        //G4cout << "totalinternal" << G4endl;
-                    }
-                    else if (theStatus == LambertianReflection) {
-                      //run->AddLambertianReflection();
-                        procCount = "Lamb";
-                    }
-                    else if (theStatus == LobeReflection) {
-                      //run->AddLobeReflection();
-                        procCount = "Lobe";
-                    }
-                    else if (theStatus == SpikeReflection) {
-                      //run->AddSpikeReflection();
-                        procCount = "Spike";
-                    }
-                    else if (theStatus == BackScattering) {
-                      //run->AddBackScattering();
-                        procCount = "BackS";
-                    }
-                    else if (theStatus == Absorption) {
-                      //run->AddAbsorption();
-                        procCount = "Abs";
-                    }
-                    else if (theStatus == Detection) {
-                      //run->AddDetection();
-                        procCount = "Det";
-                        det_energy = theParticle->GetKineticEnergy()/(MeV);
-                        G4StepPoint* Xdetected_point = aStep->GetPostStepPoint();
-                        Xdetected = Xdetected_point->GetPosition();
-                        manager->FillNtupleDColumn(3,0,det_energy);
-                        manager->FillNtupleIColumn(3,1,isNRF);
-                        manager->FillNtupleDColumn(3,2,Xdetected.x()/(cm));
-                        manager->FillNtupleDColumn(3,3,Xdetected.y()/(cm));
-                        manager->FillNtupleDColumn(3,4,Xdetected.z()/(cm));
-                        manager->AddNtupleRow(3);
-
-                    }
-                    else if (theStatus == NotAtBoundary) {
-                        procCount = "NotAtBoundary";
-                    }
-                    else if (theStatus == SameMaterial) {
-                        procCount = "SameMaterial";
-                    }
-                    else if (theStatus == StepTooSmall) {
-                        procCount = "SteptooSmall";
-                    }
-                    else if (theStatus == NoRINDEX) {
-                        procCount = "NoRINDEX";
-                    }
-                    else {
-                        G4cout << "theStatus: " << theStatus
-                               << " was none of the above." << G4endl;
-                        procCount = "noStatus";
-                      }
-                } // for if opProc
-                if(drawDetFlag)
-                {
-
-                  manager->FillNtupleSColumn(2,0,procCount);
-                  manager->FillNtupleDColumn(2,1,E_beam);
-                  manager->AddNtupleRow(2);
-
-                }
-
-            } // for for loop
-
-
-        } // for if statement if first time in photocathode
-
-    } // for if at boundary
-    //G4cout << "Stepping Fine" << G4endl;
 
 } // end of user steepping action function
 

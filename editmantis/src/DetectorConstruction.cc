@@ -2,7 +2,8 @@
 
 #include "G4RunManager.hh"
 #include "G4NistManager.hh"
-
+#include "G4SDManager.hh"
+#include "PCSensitiveDetector.hh"
 #include "G4GeometryManager.hh"
 #include "G4SolidStore.hh"
 #include "G4LogicalVolumeStore.hh"
@@ -152,16 +153,16 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                     checkOverlaps);
 
         // Make Solid PhotoCathode and set tracking limits
-        G4double PC_z = 0.95*cm; // here if set below 1cm results vary greatly 
+        G4double PC_z = 20.*nm; // here if set below 1cm results vary greatly
         G4Tubs* solidPhotoCathode = new G4Tubs("PC", PMT_rmin, PMT_rmax, PC_z, PMT_start_phi, PMT_phi);
         G4Material* PC_mat = nist->FindOrBuildMaterial("G4_GALLIUM_ARSENIDE");
 
         //Make Logical Photocathode volume
         logicPC = new G4LogicalVolume(solidPhotoCathode, PC_mat, "PC");
-        G4double PMT_window_thickness = 1; // cm
+        G4double PMT_window_thickness = 1*cm; // cm
         // Make physical volume
         physPC = new G4PVPlacement(0,
-                                   G4ThreeVector(0,0,(-PMT_z +PMT_window_thickness*cm)), // now position is relation to mother volume(PMT)
+                                   G4ThreeVector(0,0,-PMT_z + PMT_window_thickness), // now position is relation to mother volume(PMT)
                                    logicPC,
                                    "PC",
                                    logicPMT, // daughter of PMT logical
@@ -171,7 +172,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
         // These didn't actually help just slowed code down
         G4double maxPCStep = 1*nm;
-        //fStepLimit = new G4UserLimits(maxPCStep);
+        fStepLimit = new G4UserLimits(maxPCStep);
         //logicPC->SetUserLimits(fStepLimit);
         //logicPMT->SetUserLimits(fStepLimit);
         //logicWater->SetUserLimits(fStepLimit);
@@ -192,7 +193,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
         red->SetForceSolid(true);
         blue->SetVisibility(true);
         green->SetVisibility(true);
-        green->SetForceSolid(true);
+        green->SetForceWireframe(true);
         grayc->SetVisibility(true);
         grayc->SetForceSolid(true);
         lightGray->SetVisibility(true);
@@ -388,13 +389,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
         /* ****************************************************************************************************************************************************** */
 
-        G4OpticalSurface* water_opsurf= new G4OpticalSurface("water_opsurf");
-
-        water_opsurf->SetType(dielectric_metal);
-        water_opsurf->SetFinish(polished);
-        water_opsurf->SetPolish(1.0);
-        water_opsurf->SetModel(glisur);
-        new G4LogicalBorderSurface("water_surf", physWater, physPMT, water_opsurf); // name, physical volume1, phsical volume2, G4optical surface
+        //new G4LogicalBorderSurface("water_surf", physWater, physPMT, water_opsurf); // name, physical volume1, phsical volume2, G4optical surface
 
         // PMT
         G4double ephotonPMT[] = {1.7711*eV, 1.9074*eV, 2.0663*eV, 2.2542*eV, 2.4796*eV, 2.7551*eV, 3.0995*eV, 3.5423*eV, 4.133*eV};
@@ -402,16 +397,25 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
         // PMT Surface Properties
         G4double reflectivity[] = {0.03822, 0.0392,  0.040,  0.041,
-          0.0415,  0.0428,  0.0433,  0.0440, 0.0451};
+          0.0415,  0.0428,  0.0433,  0.0440, 0.0451 };
         assert(sizeof(reflectivity) == sizeof(ephotonPMT));
+        G4double abslength[] = {1000*m,1000*m,1000*m,1000*m,1000*m,1000*m,1000*m,1000*m,1000*m};
+        assert(sizeof(abslength) == sizeof(ephotonPMT));
         G4double efficiency[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
         assert(sizeof(efficiency) == sizeof(ephotonPMT));
+        G4double pmt_iof[] = {1.486, 1.4945, 1.5013, 1.5075, 1.5118, 1.5214, 1.5253, 1.5308, 1.539};
+        assert(sizeof(pmt_iof) == sizeof(ephotonPMT));
 
         G4OpticalSurface* PMT_opsurf = new G4OpticalSurface("PMTSurface",unified,polished,dielectric_metal);
         G4MaterialPropertiesTable* PMTopt = new G4MaterialPropertiesTable();
+        G4MaterialPropertiesTable* PMTabs = new G4MaterialPropertiesTable();
         PMTopt->AddProperty("REFLECTIVITY", ephotonPMT, reflectivity, num);
         PMTopt->AddProperty("EFFICIENCY", ephotonPMT, efficiency, num);
+        PMTopt->AddProperty("RINDEX", ephotonPMT, pmt_iof, num);
+        PMTabs->AddProperty("RINDEX", ephotonPMT, pmt_iof, num);
+        PMTabs->AddProperty("ABSLENGTH", ephotonPMT, abslength, num);
         PMT_opsurf->SetMaterialPropertiesTable(PMTopt);
+        PMT_mat->SetMaterialPropertiesTable(PMTabs);
 
         // Photocathode surface properties
         G4double photocath_EFF[]={0.25*perCent,36.246*perCent,39.8*perCent,40.0*perCent,36.0*perCent,30.0*perCent,
@@ -436,8 +440,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
         // Create Logical Skin surfaces (might need to change these to G4LogicalBorderSurfaces)
         new G4LogicalSkinSurface("photocath_surf", logicPC, photocath_opsurf); // name, physical volume of surface, phsical volume of world?, G4optical surface
-
-
         //
         // Air
         //
@@ -456,7 +458,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
         air->SetMaterialPropertiesTable(myMPT2);
 
-        // Set the Surface Properties
+        // Setup the sensitive detector
+        PCSensitiveDetector* sensitive = new PCSensitiveDetector("PC");
+        G4SDManager* sdman = G4SDManager::GetSDMpointer();
+        sdman->AddNewDetector(sensitive);
+        logicPC->SetSensitiveDetector(sensitive);
 
 
         //

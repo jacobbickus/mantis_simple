@@ -37,7 +37,5 @@
 #/event/output Yes
 #/output/myoutput WaterData
 #/output/myoutput WaterIncidentData
-#/output/myoutput DetIncidentData
-#/output/myoutput DetData
 #/output/myoutput IntObjData
 /run/beamOn 100

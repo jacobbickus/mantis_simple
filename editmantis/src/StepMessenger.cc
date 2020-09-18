@@ -8,10 +8,10 @@ StepMessenger::StepMessenger(SteppingAction* stepAction)
   myDir->SetGuidance("Output Commands");
   Cmd = new G4UIcmdWithAString("/output/myoutput",this);
   Cmd->SetGuidance("Choose Desired Outputs");
-  Cmd->SetGuidance("Choice: WaterData, WaterIncidentData DetIncidentData, DetData, IntObjData, none (default)");
+  Cmd->SetGuidance("Choice: WaterData, WaterIncidentData IntObjData, none (default)");
   Cmd->SetParameterName("choice",false);
   Cmd->SetDefaultValue("none");
-  Cmd->SetCandidates("WaterData WaterIncidentData DetIncidentData DetData IntObjData none");
+  Cmd->SetCandidates("WaterData WaterIncidentData IntObjData none");
   //Cmd->AvailableForStates(G4State_PreInit, G4State_Init, G4State_Idle, G4State_EventProc);
 
 }
@@ -34,14 +34,6 @@ void StepMessenger::SetNewValue(G4UIcommand* command, G4String newValue)
     else if(theCommand == "WaterIncidentData")
     {
       stepA->SetIncWatDataFlag(1);
-    }
-    else if(theCommand == "DetIncidentData")
-    {
-      stepA->SetIncidentDataFlag(1);
-    }
-    else if(theCommand == "DetData")
-    {
-      stepA->SetDetDataFlag(1);
     }
     else if(theCommand == "IntObjData")
     {
