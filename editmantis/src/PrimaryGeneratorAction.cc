@@ -11,7 +11,7 @@ chosen_energy(-1), resDataFlag(0), genM(NULL),fParticleGun(0)
         fParticleGun = new G4ParticleGun(n_particle);
 
         // Default Kinematics
-        fParticleGun->SetParticleDefinition(G4Gamma::Definition());
+        fParticleGun->SetParticleDefinition(G4Electron::Definition());
 
         fParticleGun->SetParticleTime(0.0*ns);
         // Determine particle Beam Energy
@@ -41,7 +41,7 @@ chosen_energy(-1), resDataFlag(0), genM(NULL),fParticleGun(0)
         beam_offset_x = 0*cm;
         beam_offset_y = 0*cm;
         z0 = 0*cm;
-        beam_size = 1;
+        beam_size = 1.3*mm;
         source_width=0; //by default the width along Z is zero
 
 }

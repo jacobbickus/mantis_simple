@@ -67,6 +67,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
         G4Box* solidWorld = new G4Box("World", world_size_x, world_size_y, world_size_z);
         G4Material* air = nist->FindOrBuildMaterial("G4_AIR");
+        G4Material *tungsten = nist->FindOrBuildMaterial("G4_W");
 
         // Make Logical Volume
         G4LogicalVolume* logicWorld =
@@ -85,6 +86,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                   0,         //copy number
                                   false);    //overlaps checking
 
+
+        // Make Brem target
+        G4Box *solidBremTarget = new G4Box("BremTarget", 5*mm, 5*mm, 0.25*cm);
+        G4LogicalVolume *logicBremTarget = new G4LogicalVolume(solidBremTarget, tungsten, "BremTarget");
+        new G4PVPlacement(0, G4ThreeVector(0, 0, 0.25*cm),logicBremTarget,"BremTarget", logicWorld, false, 0, checkOverlaps);
         // Tub of water
         std::cout << "The Water Tank X was set to: " << water_size_x/(cm)<< " cm" << std::endl;
         std::cout << "The Water Tank Y was set to: " << water_size_y/(cm)<< " cm" << std::endl;
@@ -200,7 +206,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
         lightGray->SetForceSolid(true);
 
         // Set Visual colors
-
+        logicBremTarget->SetVisAttributes(yellow);
         logicWater->SetVisAttributes(blue);
         logicPMT->SetVisAttributes(green);
         logicPC->SetVisAttributes(red);

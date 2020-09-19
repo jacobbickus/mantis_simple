@@ -10,6 +10,7 @@
 #include "G4SystemOfUnits.hh"
 #include "G4Event.hh"
 #include "G4Gamma.hh"
+#include "G4Electron.hh"
 
 #if defined (G4ANALYSIS_USE_ROOT)
 #include "TFile.h"
