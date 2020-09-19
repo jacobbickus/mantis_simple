@@ -66,6 +66,13 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
         // Make Solid World
 
         G4Box* solidWorld = new G4Box("World", world_size_x, world_size_y, world_size_z);
+        G4Element *elN = new G4Element("Nitrogen", "N2", 7, 14.01*g/mole);
+        G4Element *elO = new G4Element("Oxygen", "O2", 8, 16.0*g/mole);
+        G4Material *myAir = new G4Material("Air", 1.290*mg/cm3, 2);
+        myAir->AddElement(elN, 0.7);
+        myAir->AddElement(elO, 0.3);
+        G4Material *myVacuum = new G4Material("Vacuum", 1.e-5*g/cm3, 1, kStateGas, 273.15, 2.e-2*bar);
+        myVacuum->AddMaterial(myAir,1);
         G4Material* air = nist->FindOrBuildMaterial("G4_AIR");
         G4Material *tungsten = nist->FindOrBuildMaterial("G4_W");
 
@@ -86,15 +93,26 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                   0,         //copy number
                                   false);    //overlaps checking
 
-
+        // Make linac
+        G4Tubs *solidLinac = new G4Tubs("Linac",0, 2*cm, 10*cm, 0*deg, 360*deg);
+        G4LogicalVolume *logicalLinac = new G4LogicalVolume(solidLinac, tungsten, "Linac");
+        new G4PVPlacement(0, G4ThreeVector(0,0, 10*cm), logicalLinac, "Linac", logicWorld, false, 0, checkOverlaps);
+        G4Tubs *solidVacuum = new G4Tubs("Vacuum", 0, 5*mm, 10*cm, 0*deg, 360*deg);
+        G4LogicalVolume *logicalVacuum = new G4LogicalVolume(solidVacuum, myVacuum, "Vacuum");
+        new G4PVPlacement(0, G4ThreeVector(0,0,0), logicalVacuum, "Vacuum", logicalLinac, false,0,checkOverlaps);
         // Make Brem target
-        G4Box *solidBremTarget = new G4Box("BremTarget", 5*mm, 5*mm, 0.25*cm);
-        G4LogicalVolume *logicBremTarget = new G4LogicalVolume(solidBremTarget, tungsten, "BremTarget");
-        new G4PVPlacement(0, G4ThreeVector(0, 0, 0.25*cm),logicBremTarget,"BremTarget", logicWorld, false, 0, checkOverlaps);
+        G4Box *solidBremTarget = new G4Box("Brem", 2*mm, 2*mm, 0.25*cm);
+        G4LogicalVolume *logicBremTarget = new G4LogicalVolume(solidBremTarget, tungsten, "Brem");
+        new G4PVPlacement(0, G4ThreeVector(0, 0, -4*cm),logicBremTarget,"Brem", logicalVacuum, false, 0, checkOverlaps);
         // Tub of water
         std::cout << "The Water Tank X was set to: " << water_size_x/(cm)<< " cm" << std::endl;
         std::cout << "The Water Tank Y was set to: " << water_size_y/(cm)<< " cm" << std::endl;
         std::cout << "The Water Tank Z was set to: " << water_size_z/(cm) << " cm" << std::endl;
+
+        // Make test target
+        G4Box *solidTarget = new G4Box("target",5*cm, 5*cm, 1*cm);
+        G4LogicalVolume *logicaltarget = new G4LogicalVolume(solidTarget, tungsten,"Target");
+        new G4PVPlacement(0,G4ThreeVector(0, 0, 25*cm), logicaltarget, "Target", logicWorld, false, 0, checkOverlaps);
 
         // Make Solid Water
 
@@ -110,7 +128,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
         // Make Physical volume
         G4double water_x_pos = 0*cm;
         G4double water_y_pos =0*cm;
-        G4double water_z_pos =70*cm;
+        G4double water_z_pos =100*cm;
 
         physWater = new G4PVPlacement(0,                 //no rotation
                                       G4ThreeVector(water_x_pos,water_y_pos,water_z_pos),
@@ -206,6 +224,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
         lightGray->SetForceSolid(true);
 
         // Set Visual colors
+        logicaltarget->SetVisAttributes(blue);
         logicBremTarget->SetVisAttributes(yellow);
         logicWater->SetVisAttributes(blue);
         logicPMT->SetVisAttributes(green);

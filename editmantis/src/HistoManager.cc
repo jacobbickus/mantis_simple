@@ -71,6 +71,11 @@ void HistoManager::Book()
     manager->CreateNtupleIColumn("isNRF");
     manager->FinishNtuple();
 
+    manager->CreateNtuple("Test","Test");
+    manager->CreateNtupleDColumn("E_incident");
+    manager->CreateNtupleIColumn("isGamma");
+    manager->FinishNtuple();
+
 #if defined (G4ANALYSIS_USE_ROOT)
     // Create Ntuple for Resonance Sampling
     manager->CreateNtuple("ResSample", "ResSample");

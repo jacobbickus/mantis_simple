@@ -131,8 +131,8 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
           if(resDataFlag)
           {
             G4AnalysisManager* manager = G4AnalysisManager::Instance();
-            manager->FillNtupleIColumn(7,0,theRes);
-            manager->AddNtupleRow(7);
+            manager->FillNtupleIColumn(8,0,theRes);
+            manager->AddNtupleRow(8);
           }
         }
 

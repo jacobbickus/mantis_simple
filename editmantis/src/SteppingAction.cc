@@ -74,6 +74,22 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
        }
      }
 
+     // testing brem target
+     if(aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().compare(0, 6 ,"Target") == 0
+        && aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 6, "Target") != 0)
+        {
+          G4int isGamma = 0;
+          G4double energy_test = theTrack->GetKineticEnergy()/(MeV);
+          if(theTrack->GetParticleDefinition() == G4Gamma::Definition())
+          {
+            isGamma = 1;
+          }
+          manager->FillNtupleDColumn(7,0, energy_test);
+          manager->FillNtupleIColumn(7,1, isGamma);
+          manager->AddNtupleRow(7);
+
+        }
+
      // Testing NRF Analysis
      // inside Interogation Object for first time
      if(drawIntObjDataFlag)
