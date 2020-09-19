@@ -94,16 +94,16 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                   false);    //overlaps checking
 
         // Make linac
-        G4Tubs *solidLinac = new G4Tubs("Linac",0, 2*cm, 10*cm, 0*deg, 360*deg);
+        G4Tubs *solidLinac = new G4Tubs("Linac",0, 2*cm, 3*cm, 0*deg, 360*deg);
         G4LogicalVolume *logicalLinac = new G4LogicalVolume(solidLinac, tungsten, "Linac");
-        new G4PVPlacement(0, G4ThreeVector(0,0, 10*cm), logicalLinac, "Linac", logicWorld, false, 0, checkOverlaps);
-        G4Tubs *solidVacuum = new G4Tubs("Vacuum", 0, 5*mm, 10*cm, 0*deg, 360*deg);
+        new G4PVPlacement(0, G4ThreeVector(0,0, 3*cm), logicalLinac, "Linac", logicWorld, false, 0, checkOverlaps);
+        G4Tubs *solidVacuum = new G4Tubs("Vacuum", 0, 10*mm, 3*cm, 0*deg, 360*deg);
         G4LogicalVolume *logicalVacuum = new G4LogicalVolume(solidVacuum, myVacuum, "Vacuum");
         new G4PVPlacement(0, G4ThreeVector(0,0,0), logicalVacuum, "Vacuum", logicalLinac, false,0,checkOverlaps);
         // Make Brem target
-        G4Box *solidBremTarget = new G4Box("Brem", 2*mm, 2*mm, 0.25*cm);
+        G4Box *solidBremTarget = new G4Box("Brem", 2*mm, 2*mm, 0.1*mm);
         G4LogicalVolume *logicBremTarget = new G4LogicalVolume(solidBremTarget, tungsten, "Brem");
-        new G4PVPlacement(0, G4ThreeVector(0, 0, -4*cm),logicBremTarget,"Brem", logicalVacuum, false, 0, checkOverlaps);
+        new G4PVPlacement(0, G4ThreeVector(0, 0, -2*cm),logicBremTarget,"Brem", logicalVacuum, false, 0, checkOverlaps);
         // Tub of water
         std::cout << "The Water Tank X was set to: " << water_size_x/(cm)<< " cm" << std::endl;
         std::cout << "The Water Tank Y was set to: " << water_size_y/(cm)<< " cm" << std::endl;
