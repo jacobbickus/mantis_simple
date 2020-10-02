@@ -51,6 +51,9 @@ public:
 
 
 private:
+  G4LogicalVolume *logicalLinac;
+  G4LogicalVolume *logicBremTarget;
+  G4LogicalVolume *logicaltarget;
     G4LogicalVolume* logicPC;
     G4UserLimits* fStepLimit;
     G4LogicalVolume* logicPMT;
