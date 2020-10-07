@@ -70,6 +70,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4Element *elO = new G4Element("Oxygen", "O2", 8, 16.0*g/mole);
   G4Element* elC = new G4Element("Carbon", "C", 6, 12.0*g/mole);
   G4Element* elH = new G4Element("Hydrogen","H",1, 1.0*g/mole);
+  //G4Element* elF = new G4Element("Fluorine", "F", 9, 0.001696*g/mole);
   G4Material *myAir = new G4Material("Air", 1.290*mg/cm3, 2);
   myAir->AddElement(elN, 0.7);
   myAir->AddElement(elO, 0.3);
@@ -125,17 +126,26 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 G4double water_x_pos = 0*cm;
 G4double water_y_pos =0*cm;
 G4double water_z_pos =100*cm;
+        
+// Make Teflon tape wrap 
+G4double tapeThick = 1.*cm;
+G4Box* solidWholeTape = new G4Box("UnSubtractedTape", water_size_x, water_size_y, water_size_z);
+G4Box* subtractFrontTape = new G4Box("SubtractTape", water_size_x, water_size_y, tapeThick);
+G4SubtractionSolid* solidTape = new G4SubtractionSolid("Tape", &solidTape, &subtractFrontTape, 0, G4ThreeVector(0,0, water_size_z)); // name, first solid, subtraction solid, rotation, translation
+G4Material *teflonTape = nist->FindOrBuildMaterial("G4_TEFLON");
+G4LogicalVolume* logicTape = new G4LogicalVolume(solidTape, teflonTape, "Tape");
+G4PVPlacement* physTape = new G4PVPlacement(0,G4ThreeVector(water_x_pos, water_y_pos, water_z_pos), logicTape, "Tape", logicWorld, false, 0, checkOverlaps);
 
 // Make Solid Water casing
-G4Box* solidCasing = new G4Box("Encasing", water_size_x, water_size_y, water_size_z);
+G4Box* solidCasing = new G4Box("Encasing", water_size_x - tapeThick, water_size_y - tapeThick, water_size_z - tapeThick);
 G4Material *plexiglass = new G4Material("Plexiglass", 1.19*g/cm3,3);
 plexiglass->AddElement(elC, 5);
 plexiglass->AddElement(elH, 8);
 plexiglass->AddElement(elO, 2);
 G4LogicalVolume* logicCasing = new G4LogicalVolume(solidCasing, plexiglass, "Encasing");
 G4PVPlacement* physCasing = new G4PVPlacement(0,
-  G4ThreeVector(water_x_pos, water_y_pos, water_z_pos), logicCasing,
-  "Encasing", logicWorld, false, 0, checkOverlaps);
+  G4ThreeVector(0,0,0), logicCasing,
+  "Encasing", logicTape, false, 0, checkOverlaps);
 
 G4double plexiThickness = 0.18*mm;
   // Make Solid Water
@@ -440,11 +450,46 @@ G4double plexiThickness = 0.18*mm;
 
 G4MaterialPropertiesTable* casingMPT = new G4MaterialPropertiesTable();
 // add all of the properties here for plexiglass
-// Reflectivity
-// abslength
-// efficiency
-// index of refraction
-  new G4LogicalSkinSurface("casing-water_surf", logicCasing, casing_opsurf); // name, physical volume1, phsical volume2, G4optical surface
+G4double ephotonPlexi[] = {1.1808067*eV,1.2336786*eV,1.298269*eV,1.3699967*eV,1.4501135*eV,1.5401826*eV,1.6421815*eV,1.7586482*eV,1.8928962*eV,2.049334*eV,
+                           2.2339586*eV,2.4551426*eV, 2.7249385*eV,2.850223*eV,3.0*eV,4.0*eV};
+const G4int numPlexi = sizeof(ephotonPlexi)/sizeof(G4double);
+G4double plexiReflectivity[] = {0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02}; // transparent 
+G4double plexiIOF[] = {1.4813,1.482,1.4827,1.4832,1.4837,1.4842,1.485,1.4862,1.488,1.4904,1.4933,1.4962,1.4996,1.5027,1.5027,1.5027};
+G4double plexiEff[] = {0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.};
+G4double plexiAbs[] = {1000.0*m,1000.0*m,1000.0*m,1000.0*m,1000.0*m,1000.0*m,1000.0*m,1000.0*m,30.0*m,30.0*m,11.4*m,11.4*m,7.3*m,7.3*m, 5.0*m, 1.0*mm}; // pretty much transparent until UV energy 
+assert(sizeof(plexiIOF) == sizeof(ephotonPlexi));
+assert(sizeof(plexiReflectivity) == sizeof(ephotonPlexi));
+assert(sizeof(plexiEff) == sizeof(ephotonPlexi));
+assert(sizeof(plexiAbs) == sizeof(ephotonPlexi));
+casingMPT->AddProperty("REFLECTIVITY", ephotonPlexi, plexiReflectivity, numPlexi)->SetSpline(true);
+casingMPT->AddProperty("RINDEX", ephotonPlexi, plexiIOF, numPlexi)->SetSpline(true);
+casingMPT->AddProperty("EFFICIENCY", ephotonPlexi, plexiEff, numPlexi)->SetSpline(true);
+casingMPT->AddProperty("ABSLENGTH", ephotonPlexi, plexiAbs, numPlexi)->SetSpline(true);
+
+G4OpticalSurface* casing_opsurf = new G4OpticalSurface("CasingSurface",unified,polished,dielectric_dielectric);
+casing_opsurf->SetMaterialPropertiesTable(casingMPT);
+new G4LogicalSkinSurface("casing-water_surf", logicCasing, casing_opsurf); // name, physical volume1, phsical volume2, G4optical surface
+        
+// Add properties for Teflon Tape 
+G4MaterialPropertiesTable* tapeMPT = new G4MaterialPropertiesTable();
+G4double ephotonTape[] = {1.1427161*eV,1.2915073*eV,1.4586435*eV,1.6984206*eV,2.0160114*eV,2.5303*eV,3.262755*eV};
+const G4int numTape = sizeof(ephotonTape)/sizeof(G4double);
+G4double tapeReflectivity[] = {.98,.98,.98,.98,.98,.98,.98};
+G4double tapeEff[] = {0.,0.,0.,0.,0.,0.,0.};
+G4double tapeIOF[] = {1.32,1.32,1.32,1.32,1.32,1.32,1.33};
+G4double tapeAbs[] = {1000*m, 1000*m,1000*m,1000*m,1000*m,1000*m,1000*m}; // setting absorption length arbitrarily large, don't want teflon to kill opt photons 
+assert(sizeof(tapeReflectivity) == sizeof(ephotonTape));
+assert(sizeof(tapeEff) == sizeof(ephotonTape));
+assert(sizeof(tapeIOF) == sizeof(ephotonTape));
+assert(sizeof(tapeAbs) == sizeof(ephotonTape));
+tapeMPT->AddProperty("REFLECTIVITY", ephotonTape, tapeReflectivity, numTape)->SetSpline(true);
+tapeMPT->AddProperty("RINDEX", ephotonTape, tapeIOF, numTape)->SetSpline(true);
+tapeMPT->AddProperty("EFFICIENCY", ephotonTape, tapeEff, numTape)->SetSpline(true);
+tapeMPT->AddProperty("ABSLENGTH", ephotonTape, tapeAbs, numTape)->SetSpline(true);
+
+G4OpticalSurface* tape_opsurf = new G4OpticalSurface("TapeSurface",unified,polished,dielectric_dielectric);
+tape_opsurf->SetMaterialPropertiesTable(tapeMPT);
+new G4LogicalSkinSurface("tape_surf", logicTape, tape_opsurf);   
 
   // PMT
   G4double ephotonPMT[] = {1.7711*eV, 1.9074*eV, 2.0663*eV, 2.2542*eV, 2.4796*eV, 2.7551*eV, 3.0995*eV, 3.5423*eV, 4.133*eV};
