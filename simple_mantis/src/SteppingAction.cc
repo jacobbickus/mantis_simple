@@ -1,6 +1,7 @@
 #include "SteppingAction.hh"
 #include "G4Cerenkov.hh"
 
+extern G4bool output;
 
 SteppingAction::SteppingAction(const DetectorConstruction* det, G4ParticleGun* particle_gun, RunAction* localrun)
 : G4UserSteppingAction(), drawIntObjDataFlag(0), drawWaterFlag(0), stepM(NULL)
@@ -76,7 +77,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 
      // testing brem target
      if(aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().compare(0, 6 ,"Target") == 0
-        && aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 6, "Target") != 0)
+        && aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 6, "Target") != 0 && output)
         {
           G4int isGamma = 0;
           G4double energy_test = theTrack->GetKineticEnergy()/(MeV);
@@ -95,7 +96,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
      if(drawIntObjDataFlag)
      {
        if(aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().compare(0, 14 ,"IntObjPhysical") == 0
-          && aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 14, "IntObjPhysical") != 0)
+          && aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 14, "IntObjPhysical") != 0 && output)
        {
          G4double energy_IntObj = theTrack->GetKineticEnergy()/(MeV);
          manager->FillNtupleDColumn(5,0,energy_IntObj);
@@ -109,7 +110,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
     if(drawWaterIncDataFlag)
     {
       if(aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().compare(0, 5 ,"Water") == 0
-         && aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 5, "Water") != 0)
+         && aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 5, "Water") != 0 && output)
          {
            G4double energy_inc_water = theTrack->GetKineticEnergy()/(MeV);
            manager->FillNtupleDColumn(6,0, energy_inc_water);
@@ -119,7 +120,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
     }
 
     // Here I am inside the water
-    if(aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0,5,"Water")==0){
+    if(aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0,5,"Water")==0 && output){
 
         // only care about secondaries that occur in water volume
         const std::vector<const G4Track*>* secondaries = aStep->GetSecondaryInCurrentStep();

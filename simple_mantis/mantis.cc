@@ -29,6 +29,7 @@ G4String macro;
 G4long seed;
 G4String root_output_name;
 G4String gOutName;
+G4bool output;
 
 namespace
 {
@@ -47,6 +48,7 @@ int main(int argc,char **argv)
   G4bool use_xsec_integration = true;
   G4bool force_isotropic = false;
   G4bool addNRF = true;
+  output = false;
   macro = "mantis.in";
   seed = 1;
 
@@ -87,6 +89,7 @@ int main(int argc,char **argv)
         MySession* LoggedSession = new MySession;
         if(! ui && macro != "vis_save.mac"){
           UI->SetCoutDestination(LoggedSession);
+          output = true;
         }
         // choose the Random engine
         CLHEP::HepRandom::setTheEngine(new CLHEP::RanluxEngine);

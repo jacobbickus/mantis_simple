@@ -1,5 +1,7 @@
 #include "PCSensitiveDetector.hh"
 
+extern G4bool output;
+
 PCSensitiveDetector::PCSensitiveDetector(G4String SDname)
 :G4VSensitiveDetector(SDname)
 {
@@ -25,10 +27,11 @@ G4bool PCSensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *)
     OpManager->GetPostStepProcessVector()->entries();
   G4ProcessVector* postStepDoItVector =
     OpManager->GetPostStepProcessVector(typeDoIt);
-
+if(output){
     manager->FillNtupleDColumn(1,0,theParticle->GetKineticEnergy()/(MeV));
     manager->FillNtupleIColumn(1,2, copyNo);
     manager->AddNtupleRow(1);
+  }
 
 
   for (G4int i=0; i<MAXofPostStepLoops; ++i)
@@ -38,7 +41,7 @@ G4bool PCSensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *)
 
       G4OpBoundaryProcess* opProc = dynamic_cast<G4OpBoundaryProcess*>(currentProcess);
 
-      if(opProc){
+      if(opProc && output){
           theStatus = opProc->GetStatus();
 
           if(theStatus == Transmission)
@@ -117,8 +120,10 @@ G4bool PCSensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *)
             }
       } // for if opProc
       // fill process histogram
+      if(output){
       manager->FillNtupleSColumn(2,0,procCount);
       manager->AddNtupleRow(2);
+    }
 
   }// for for statement
   return true;
