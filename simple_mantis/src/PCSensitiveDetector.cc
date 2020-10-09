@@ -29,7 +29,7 @@ G4bool PCSensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *)
     OpManager->GetPostStepProcessVector(typeDoIt);
 if(output){
     manager->FillNtupleDColumn(1,0,theParticle->GetKineticEnergy()/(MeV));
-    manager->FillNtupleIColumn(1,2, copyNo);
+    manager->FillNtupleIColumn(1,1, copyNo);
     manager->AddNtupleRow(1);
   }
 

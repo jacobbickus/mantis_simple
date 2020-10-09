@@ -38,6 +38,15 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
         fScintEnergy = 0;
         fNRF = 0;
         fStatusKilled = 0;
+        transmission = 0;
+        fresnel = 0;
+        internalref = 0;
+        lambertian = 0;
+        lobe = 0;
+        spike = 0;
+        backS = 0;
+        absorb = 0;
+        detected = 0;
 
         fTimer->Start();
         setStartTime();
@@ -59,6 +68,15 @@ void RunAction::EndOfRunAction(const G4Run* aRun)
         G4cout <<   "---------------------------------" << G4endl;
         G4cout << "Total Number of Events: " << TotNbofEvents << G4endl;
         //G4cout << "Total number of Surface Events: " << fTotalSurface << G4endl;
+        G4cout << "Total transmission: " << transmission << G4endl;
+        G4cout << "Fresnel: " << fresnel<< G4endl;
+        G4cout << "internref: " << internalref<<G4endl;
+        G4cout << "Lambertian: " << lambertian<< G4endl;
+        G4cout << "lobe: " << lobe << G4endl;
+        G4cout << "spke: " << spike << G4endl;
+        G4cout << "BackS: " << backS << G4endl;
+        G4cout << "absorbed " << absorb << G4endl;
+        G4cout << "Detected: " << detected << G4endl;
         G4cout << "Total number of NRF Photons: " << fNRF << G4endl;
         G4cout << "Total number of Tracks Cut Based on Position: " << fStatusKilled << G4endl;
         G4cout <<

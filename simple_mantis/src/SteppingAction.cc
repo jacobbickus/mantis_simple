@@ -170,6 +170,114 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 
     } // end of if loop while inside water
 
+    G4StepPoint* endPoint   = aStep->GetPostStepPoint();
+    G4StepPoint* startPoint = aStep->GetPreStepPoint();
+
+    if(endPoint->GetStepStatus() == fGeomBoundary) {
+
+            const G4DynamicParticle* theParticle = theTrack->GetDynamicParticle();
+
+            G4ThreeVector oldMomentumDir = theParticle->GetMomentumDirection();
+
+            G4ThreeVector m0 = startPoint->GetMomentumDirection(); // don't use these yet?
+            G4ThreeVector m1 = endPoint->GetMomentumDirection();
+
+            G4OpBoundaryProcessStatus theStatus = Undefined;
+            G4ProcessManager* OpManager =
+                    G4OpticalPhoton::OpticalPhoton()->GetProcessManager();
+            G4int MAXofPostStepLoops =
+                    OpManager->GetPostStepProcessVector()->entries();
+            G4ProcessVector* postStepDoItVector =
+                    OpManager->GetPostStepProcessVector(typeDoIt);
+
+            //if(endPoint->GetPhysicalVolume()->GetName().compare(0,8,"Encasing")==0 && startPoint->GetPhysicalVolume()->GetName().compare(0,8,"Encasing")!=0) { // first time in photocathode
+              //if(endPoint->GetPhysicalVolume()->GetName().compare(0,4,"Tape")==0 && startPoint->GetPhysicalVolume()->GetName().compare(0,4,"Tape")!=0) {
+                if(endPoint->GetPhysicalVolume()->GetName().compare(0,3,"PMT")==0 && startPoint->GetPhysicalVolume()->GetName().compare(0,3,"PMT")!=0) {
+              for (G4int i=0; i<MAXofPostStepLoops; ++i)
+              {
+                  G4VProcess* currentProcess = (*postStepDoItVector)[i];
+                  //std::cout << G4Cerenkov::PostStepGetPhysicalInteractionLength(theTrack) << std::endl;
+
+                  G4OpBoundaryProcess* opProc = dynamic_cast<G4OpBoundaryProcess*>(currentProcess);
+
+                  if(opProc){
+                      theStatus = opProc->GetStatus();
+
+                      if(theStatus == Transmission)
+                      {
+                          run->AddTransmission();
+                          procCount = "Trans";
+                          // G4cout << "transmission"<< G4endl;
+                      }
+                      else if(theStatus == FresnelRefraction)
+                      {
+                          run->AddFresnelRefraction();
+                          procCount = "Refr";
+                          //G4cout << "fres refraction"<< G4endl;
+                      }
+                      else if (theStatus == TotalInternalReflection)
+                      {
+                        run->AddTotalInternalReflection();
+                          procCount = "Int_Refl";
+                          //G4cout << "totalinternal" << G4endl;
+                      }
+                      else if (theStatus == LambertianReflection)
+                      {
+                        run->AddLambertianReflection();
+                          procCount = "Lamb";
+                      }
+                      else if (theStatus == LobeReflection)
+                      {
+                        run->AddLobeReflection();
+                          procCount = "Lobe";
+                      }
+                      else if (theStatus == SpikeReflection)
+                      {
+                        run->AddSpikeReflection();
+                          procCount = "Spike";
+                      }
+                      else if (theStatus == BackScattering)
+                      {
+                        run->AddBackScattering();
+                          procCount = "BackS";
+                      }
+                      else if (theStatus == Absorption)
+                      {
+                        run->AddAbsorption();
+                          procCount = "Abs";
+                      }
+                      else if (theStatus == Detection)
+                      {
+                        run->AddDetection();
+
+                      }
+                      else if (theStatus == NotAtBoundary)
+                      {
+                          procCount = "NotAtBoundary";
+                      }
+                      else if (theStatus == SameMaterial)
+                      {
+                          procCount = "SameMaterial";
+                      }
+                      else if (theStatus == StepTooSmall)
+                      {
+                          procCount = "SteptooSmall";
+                      }
+                      else if (theStatus == NoRINDEX)
+                      {
+                          procCount = "NoRINDEX";
+                      }
+                      else
+                      {
+                          G4cout << "theStatus: " << theStatus
+                                 << " was none of the above." << G4endl;
+                          procCount = "noStatus";
+                        }
+                  } // for if opProc
+                } // for for loop
+              } // for if statement
+            } // for if statement
+
 } // end of user steepping action function
 
 

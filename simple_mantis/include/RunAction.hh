@@ -33,6 +33,15 @@ class RunAction : public G4UserRunAction
     void AddTotalSurface(void) {fTotalSurface += 1;}
     void AddNRF(void){fNRF++;}
     void AddStatusKilled(void){fStatusKilled++;}
+    void AddTransmission(void){transmission++;}
+    void AddFresnelRefraction(void){fresnel++;}
+    void AddTotalInternalReflection(void){internalref++;}
+    void AddLambertianReflection(void){lambertian++;}
+    void AddLobeReflection(void){lobe++;}
+    void AddSpikeReflection(void){spike++;}
+    void AddBackScattering(void){backS++;}
+    void AddAbsorption(void){absorb++;}
+    void AddDetection(void){detected++;}
     void setStartTime()
     {
       startTime = time(0);
@@ -58,6 +67,7 @@ class RunAction : public G4UserRunAction
     G4int fTotalSurface;
     G4int fNRF;
     G4int fStatusKilled;
+    G4int transmission, fresnel, internalref, lambertian, lobe, spike, backS, absorb, detected;
 };
 
 

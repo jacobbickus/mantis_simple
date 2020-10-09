@@ -63,6 +63,7 @@ private:
     G4int drawWaterFlag;
     G4double E_beam;
     StepMessenger* stepM;
+    G4String procCount;
 
 };
 
