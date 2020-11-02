@@ -98,7 +98,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                             false);    //overlaps checking
 
   // Make linac
-  G4bool testBrem = false;
+  G4bool testBrem = true;
   if(testBrem)
   {
     G4Tubs *solidLinac = new G4Tubs("Linac",0, 2*cm, 3*cm, 0*deg, 360*deg);
