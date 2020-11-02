@@ -34,19 +34,11 @@ public:
     inline double GetBeamEnergy(){return energy;}
     G4ParticleGun* GetParticleGun(){return fParticleGun;};
     void SetEnergyValue(G4double val){chosen_energy = val;}
-    void SetResDataFlag(G4int val){resDataFlag = val;}
 
 private:
   G4double chosen_energy;
-  G4int resDataFlag;
   PrimaryGenActionMessenger* genM;
   G4ParticleGun* fParticleGun;
-#if defined (G4ANALYSIS_USE_ROOT)
-  TRandom1 Random;
-  TH1D *hBrems;
-  TH1D *hSample;
-  TH1D *hBinary;
-#endif
 
 protected:
 
@@ -61,9 +53,6 @@ protected:
       G4float beam_offset_x,beam_offset_y,beam_size,source_width;
       G4float energy;
       double random;
-      std::vector<float> e,dNde,N; //the input from the file
-
-      void ReadInputSpectrumFile(std::string);
 
 };
 
