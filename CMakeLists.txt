@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 project(mantis)
 option(WITH_GEANT4_UIVIS "Build example with Geant4 UI and Vis drivers" ON)
-option(WITH_GEANT4_ANALYSIS_USE_ROOT "Build example with Geant4 ROOT ANALYSIS" OFF)
+option(WITH_GEANT4_ANALYSIS_USE_ROOT "Build example with Geant4 ROOT ANALYSIS" ON)
 #add_compile_options(-Wno-unused-variable -Wno-shadow -Wno-unused-parameter)
 if(WITH_GEANT4_UIVIS)
   find_package(Geant4 REQUIRED ui_all vis_all)
@@ -52,9 +52,7 @@ target_link_libraries(mantis ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 #
 set(mantis_SCRIPTS
     mantis.in
-    brems_distributions.root
     vis.mac
-    input_spectrum.txt
     init_vis.mac
     vis_save.mac
   )
