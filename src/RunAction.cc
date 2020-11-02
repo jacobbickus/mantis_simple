@@ -4,7 +4,6 @@
 #include "HistoManager.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "G4RunManager.hh"
-#include "EventAction.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4UnitsTable.hh"
 
