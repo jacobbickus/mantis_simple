@@ -3,12 +3,9 @@
 
 extern G4bool output;
 
-SteppingAction::SteppingAction(const DetectorConstruction* det, G4ParticleGun* particle_gun, RunAction* localrun)
+SteppingAction::SteppingAction()
 : G4UserSteppingAction()
 {
-    local_det = det;
-    particle_gun_local = particle_gun;
-    run = localrun;
 }
 
 SteppingAction::~SteppingAction()
