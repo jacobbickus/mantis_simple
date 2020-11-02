@@ -3,39 +3,6 @@
 /run/verbose 0
 /event/verbose 0
 # must be called prior to run initialized
-# default is read from input_spectrum.txt -2 is from brems_distribution.root
 #/input/energy -2
-# To get the Resonance Sample Data set to true
-#/input/ResData True
-# Turn chopper wheel On/off
-#/chopper/On True
-#units mm
-#/chopper/thickness 5
-#units cm
-#/chopper/distance
-#units cm for XPos,YPos, ZPos
-#/mytar/IntObjXPos
-# units cm
-#/mytar/IntObjRad
-#percentage of Fission isotope
-#/mytar/fAbundance 90
-#Target options Uranium Plutonium
-#/mytar/target Uranium
-#units cm WaterX, WaterY, WaterZ
-#/mydet/WaterX
-#units degrees *Backscatter angle
-#/mydet/Angle 120
-# units cm for photocathode radius (also adjust PMT radius accordingly)
-#/mydet/PCrad
-# Photocathode material options GaAsP Bialkali
-#/mydet/PCmat
-# Number of PMTs in each Cherenkov Detector so total = input*2
-#/mydet/nPMT 4
-# Caution the tank should not be set larger than world (5x5x10 meters)
 /run/initialize
-# Output NumPhotons with data of number of cherenkov emitted per primary particle beam energy
-#/event/output Yes
-#/output/myoutput WaterData
-#/output/myoutput WaterIncidentData
-#/output/myoutput IntObjData
 /run/beamOn 100
