@@ -2,8 +2,6 @@
 
 #include "G4RunManager.hh"
 #include "G4NistManager.hh"
-#include "G4SDManager.hh"
-#include "PCSensitiveDetector.hh"
 #include "G4GeometryManager.hh"
 #include "G4SolidStore.hh"
 #include "G4LogicalVolumeStore.hh"
@@ -186,9 +184,6 @@ physWater = new G4PVPlacement(0,                 //no rotation
   // Make Logical PMT
 
   logicPMT = new G4LogicalVolume(solidPMT, PMT_mat, "PMT");
-  // Set as Sensitive detector
-
-
 
   // Make Physical PMT
 
@@ -223,13 +218,6 @@ physWater = new G4PVPlacement(0,                 //no rotation
                              false,
                              0,
                              checkOverlaps);
-
-  // These didn't actually help just slowed code down
-  //G4double maxPCStep = 1*nm;
-  //fStepLimit = new G4UserLimits(maxPCStep);
-  //logicPC->SetUserLimits(fStepLimit);
-  //logicPMT->SetUserLimits(fStepLimit);
-  //logicWater->SetUserLimits(fStepLimit);
 
   // Visualization Attributes
 
@@ -576,16 +564,7 @@ new G4LogicalBorderSurface("tape_surf", physWater, physTape, tape_opsurf);
   G4MaterialPropertiesTable* myMPT2 = new G4MaterialPropertiesTable();
   myMPT2->AddProperty("RINDEX", photonEnergy, refractiveIndex2, nEntries);
 
-  //G4cout << "Air G4MaterialPropertiesTable" << G4endl;
-  //myMPT2->DumpTable();
-
   air->SetMaterialPropertiesTable(myMPT2);
-
-  // Setup the sensitive detector
-  PCSensitiveDetector* sensitive = new PCSensitiveDetector("PC");
-  G4SDManager* sdman = G4SDManager::GetSDMpointer();
-  sdman->AddNewDetector(sensitive);
-  logicPC->SetSensitiveDetector(sensitive);
 
 
   //
