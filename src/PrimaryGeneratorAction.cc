@@ -3,7 +3,7 @@
 
 
 PrimaryGeneratorAction::PrimaryGeneratorAction() : G4VUserPrimaryGeneratorAction(),
-chosen_energy(-1), resDataFlag(0), genM(NULL),fParticleGun(0)
+chosen_energy(-1), genM(NULL),fParticleGun(0)
 {
 
         genM = new PrimaryGenActionMessenger(this);
