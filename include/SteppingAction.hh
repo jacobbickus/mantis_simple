@@ -30,7 +30,7 @@
 class SteppingAction : public G4UserSteppingAction
 {
   public:
-    SteppingAction(const DetectorConstruction*, G4ParticleGun*, RunAction*);
+    SteppingAction();
     virtual ~SteppingAction();
 
     // method from the base class
