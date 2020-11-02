@@ -8,9 +8,7 @@
 #include "G4ParticleGun.hh"
 #include "G4OpBoundaryProcess.hh"
 #include "RunAction.hh"
-#include "StackingAction.hh"
 #include "HistoManager.hh"
-#include "StepMessenger.hh"
 #include "DetectorConstruction.hh"
 
 #include "G4SteppingManager.hh"
@@ -29,8 +27,6 @@
 #include "G4ParticleGun.hh"
 #include "G4SystemOfUnits.hh"
 
-class StepMessenger;
-
 class SteppingAction : public G4UserSteppingAction
 {
   public:
@@ -40,30 +36,8 @@ class SteppingAction : public G4UserSteppingAction
     // method from the base class
     virtual void UserSteppingAction(const G4Step*);
 
-public: // for now set to public until I can figure out how to work with protected
-
-        std::vector<double> Ev;
-        void SetWaterDataFlag(G4int val){drawWaterFlag = val;};
-        void SetIntObjDataFlag(G4int val){drawIntObjDataFlag = val;};
-        void SetIncWatDataFlag(G4int val){drawWaterIncDataFlag = val;};
-
-
 private:
     bool TrackMustDie(const G4Step*);
-    int EventGeneratorParticle;
-    float LowEnergyCutoff;
-    G4ThreeVector p;
-    G4ThreeVector X;
-    G4ThreeVector incX;
-    const DetectorConstruction* local_det;
-    G4ParticleGun* particle_gun_local;
-    RunAction* run;
-    G4int drawIntObjDataFlag;
-    G4int drawWaterIncDataFlag;
-    G4int drawWaterFlag;
-    G4double E_beam;
-    StepMessenger* stepM;
-    G4String procCount;
 
 };
 
