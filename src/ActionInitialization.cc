@@ -3,7 +3,6 @@
 #include "PrimaryGeneratorAction.hh"
 #include "RunAction.hh"
 #include "SteppingAction.hh"
-#include "StackingAction.hh"
 #include "HistoManager.hh"
 
 
