@@ -4,7 +4,6 @@
 #include "RunAction.hh"
 #include "SteppingAction.hh"
 #include "StackingAction.hh"
-#include "EventAction.hh"
 #include "HistoManager.hh"
 
 
@@ -34,9 +33,4 @@ void ActionInitialization::Build() const
     SteppingAction *stepAction = new SteppingAction(fDetector,
       primary_action->GetParticleGun(), run);
     SetUserAction(stepAction);
-    EventAction *eventAction = new EventAction(primary_action->GetParticleGun(),
-    stepAction);
-    SetUserAction(eventAction);
-    StackingAction *stackAction = new StackingAction(fDetector, run);
-    SetUserAction(stackAction);
 }
