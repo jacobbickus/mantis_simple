@@ -7,29 +7,18 @@
 
 
 ActionInitialization::ActionInitialization(const DetectorConstruction* det)
- : G4VUserActionInitialization(), fDetector(det)
+ : G4VUserActionInitialization()
 {}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 ActionInitialization::~ActionInitialization()
 {}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void ActionInitialization::Build() const
 {
 
     HistoManager* histo = new HistoManager();
-    PrimaryGeneratorAction *primary_action=new PrimaryGeneratorAction();
-    SetUserAction(primary_action);
+    SetUserAction(new PrimaryGeneratorAction());
     RunAction* run = new RunAction(histo);
     SetUserAction(run);
-
-    SteppingAction *stepAction = new SteppingAction(fDetector,
-      primary_action->GetParticleGun(), run);
-    SetUserAction(stepAction);
+    SetUserAction(new SteppingAction());
 }
