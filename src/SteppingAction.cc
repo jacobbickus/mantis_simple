@@ -9,7 +9,7 @@ SteppingAction::SteppingAction()
 }
 
 SteppingAction::~SteppingAction()
-{ delete stepM; }
+{ }
 
 void SteppingAction::UserSteppingAction(const G4Step* aStep)
 {
